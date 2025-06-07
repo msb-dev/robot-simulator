@@ -9,13 +9,13 @@ export interface Config {
 const minBound = 0
 const maxBound = 4
 
-class NonIntegerCoordinateError extends Error {
+export class NonIntegerCoordinateError extends Error {
   constructor() {
     super('NonIntegerCoordinateError')
   }
 }
 
-class OutOfBoundCoordinateError extends Error {
+export class OutOfBoundCoordinateError extends Error {
   constructor() {
     super('OutOfBoundCoordinateError')
   }

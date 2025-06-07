@@ -2,7 +2,22 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { validateConfig, type Config } from './commands/commands'
+import {
+  validateConfig,
+  type Config,
+  NonIntegerCoordinateError,
+  OutOfBoundCoordinateError,
+} from './commands/commands'
+
+const getErrorMessage = (error?: Error): string | undefined => {
+  if (error instanceof NonIntegerCoordinateError) {
+    return 'x and y coordinates should be integers'
+  } else if (error instanceof OutOfBoundCoordinateError) {
+    return 'That would mean the robot would fall off the table!'
+  } else {
+    return 'Unknown error occurred'
+  }
+}
 
 function App() {
   class UnknownError extends Error {
@@ -16,6 +31,7 @@ function App() {
   const place = (config: Config) => {
     try {
       validateConfig(config)
+      setConfig(config)
     } catch (e: unknown) {
       if (e instanceof Error) {
         setError(e)
@@ -23,8 +39,6 @@ function App() {
         setError(new UnknownError())
       }
     }
-
-    setConfig(config)
   }
 
   const configMessage =
@@ -53,6 +67,7 @@ function App() {
         </button>
 
         <p>{configMessage}</p>
+        {error && <p>{`Error: ${getErrorMessage(error)}`}</p>}
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
