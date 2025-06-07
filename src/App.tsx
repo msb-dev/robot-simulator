@@ -2,10 +2,35 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import incrementCount from './incrementCount'
+import { validateConfig, type Config } from './commands/commands'
 
 function App() {
-  const [count, setCount] = useState(0)
+  class UnknownError extends Error {
+    constructor() {
+      super('UnknownError')
+    }
+  }
+  const [config, setConfig] = useState<Config>()
+  const [error, setError] = useState<Error>()
+
+  const place = (config: Config) => {
+    try {
+      validateConfig(config)
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e)
+      } else {
+        setError(new UnknownError())
+      }
+    }
+
+    setConfig(config)
+  }
+
+  const configMessage =
+    config !== undefined
+      ? `Config: x=${config.x}, y=${config.y}, f=${config.f}`
+      : 'Robot not on table'
 
   return (
     <>
@@ -17,18 +42,17 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1>Toy Robot Simulator</h1>
       <div className="card">
         <button
           onClick={() => {
-            setCount(incrementCount(count))
+            place({ x: 1, y: 2, f: 'NORTH' })
           }}
         >
-          count is {count}
+          Place 1, 2, NORTH
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+        <p>{configMessage}</p>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more

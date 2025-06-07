@@ -21,7 +21,7 @@ class OutOfBoundCoordinateError extends Error {
   }
 }
 
-const validateConfig = (config: Config) => {
+export const validateConfig = (config: Config) => {
   if (!Number.isInteger(config.x) || !Number.isInteger(config.y)) {
     throw new NonIntegerCoordinateError()
   }
@@ -33,9 +33,4 @@ const validateConfig = (config: Config) => {
   ) {
     throw new OutOfBoundCoordinateError()
   }
-}
-
-export const place = (config: Config): Config => {
-  validateConfig(config)
-  return config
 }
