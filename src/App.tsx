@@ -7,7 +7,7 @@ import {
   type Config,
   NonIntegerCoordinateError,
   OutOfBoundCoordinateError,
-} from './commands/commands'
+} from './config/config'
 
 const getErrorMessage = (error?: Error): string | undefined => {
   if (error instanceof NonIntegerCoordinateError) {

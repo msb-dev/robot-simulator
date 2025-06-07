@@ -20,7 +20,7 @@ describe('parseInput', () => {
   describe('when given a PLACE command', () => {
     it('should parse it correctly to a Config (though not necessarily a valid Config) if the parameters are the right types', () => {
       expect(parseInput('    pLACe 1.2,   -2.4  , nOrTH     ')).toEqual({
-        x: 1,
+        x: 1.2,
         y: -2.4,
         f: 'NORTH',
       })

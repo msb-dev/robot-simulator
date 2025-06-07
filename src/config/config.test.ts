@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateConfig, type Config } from './commands'
+import { validateConfig, type Config } from './config'
 
 describe('validateConfig', () => {
   it('should not throw an error if the specified config is within bounds', () => {

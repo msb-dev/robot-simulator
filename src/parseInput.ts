@@ -1,4 +1,4 @@
-import type { Config } from './commands/commands'
+import { orientations, type Config, type Orientation } from './config/config'
 
 type Command = 'REPORT' | 'MOVE' | 'LEFT' | 'RIGHT' | Config
 
@@ -8,12 +8,30 @@ class InvalidInputError extends Error {
   }
 }
 
-const parsePlaceParemeters = (p1: string, p2: string, p3: string) => {
-  const x = Number(p1)
-  const y = Number(p2)
-  if (Number.isNaN(x)) {
+const parseOrientation = (input: string): Orientation => {
+  const normalisedInput = input.toUpperCase()
+
+  const orientation = orientations.find(
+    (validOrientation) => validOrientation === normalisedInput
+  )
+  if (orientation) {
+    return orientation
+  } else {
     throw new InvalidInputError()
   }
+}
+
+const parsePlaceParameters = (p1: string, p2: string, p3: string): Config => {
+  console.error('FFFFFFFFOOOOOOOOO', p1, p2, p3)
+  const x = Number(p1)
+  const y = Number(p2)
+  if (Number.isNaN(x) || Number.isNaN(y)) {
+    throw new InvalidInputError()
+  }
+
+  const f = parseOrientation(p3)
+
+  return { x, y, f }
 }
 
 export const parseInput = (input: string): Command => {
@@ -35,9 +53,17 @@ export const parseInput = (input: string): Command => {
     return 'LEFT'
   } else if (/^RIGHT$/.test(normalisedInput)) {
     return 'RIGHT'
-  } else if (/^PLACE$/.test(normalisedInput)) {
-    return 'MOVE'
-  } else {
+  }
+
+  // The only remaining possible command is PLACE
+  // Allow whitespace around parameters
+  const matches = normalisedInput.match(
+    /^(PLACE)\s*([\S^,]+)\s*,\s*([\S^,]+)\s*,\s*([\S^,]+)$/
+  )
+
+  if (matches === null) {
     throw new InvalidInputError()
   }
+
+  return parsePlaceParameters(matches[2], matches[3], matches[4])
 }

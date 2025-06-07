@@ -1,4 +1,5 @@
-export type Orientation = 'NORTH' | 'EAST' | 'SOUTH' | 'WEST'
+export const orientations = ['NORTH', 'EAST', 'SOUTH', 'WEST'] as const
+export type Orientation = (typeof orientations)[number]
 
 export interface Config {
   x: number
