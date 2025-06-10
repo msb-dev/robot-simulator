@@ -1,15 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { left } from './commands'
-import type { Orientation } from '../config/config'
+import { left, right } from './commands'
 
 describe('left', () => {
   const configBase = { x: 1, y: 2 }
-  //   it('should turn NORTH into WEST', () => {
-  //     expect(left({ ...configBase, f: 'NORTH' }).f).toEqual('WEST')
-  //   })
-  //   it('should turn EAST into NORTH', () => {
-  //     expect(left({ ...configBase, f: 'EAST' }).f).toEqual('WESTS')
-  //   })
   it.each`
     startOrientation | endOrientation
     ${'NORTH'}       | ${'WEST'}
@@ -20,6 +13,24 @@ describe('left', () => {
     'should turn $startOrientation into $endOrientation',
     ({ startOrientation, endOrientation }) => {
       expect(left({ ...configBase, f: startOrientation }).f).toEqual(
+        endOrientation
+      )
+    }
+  )
+})
+
+describe('right', () => {
+  const configBase = { x: 1, y: 2 }
+  it.each`
+    startOrientation | endOrientation
+    ${'NORTH'}       | ${'EAST'}
+    ${'EAST'}        | ${'SOUTH'}
+    ${'SOUTH'}       | ${'WEST'}
+    ${'WEST'}        | ${'NORTH'}
+  `(
+    'should turn $startOrientation into $endOrientation',
+    ({ startOrientation, endOrientation }) => {
+      expect(right({ ...configBase, f: startOrientation }).f).toEqual(
         endOrientation
       )
     }

@@ -9,11 +9,21 @@ import {
   OutOfBoundCoordinateError,
 } from './config/config'
 import { InvalidInputError, parseInput } from './parseInput'
-import { left } from './commands/commands'
+import { left, right, move } from './commands/commands'
+
+class RobotNotOnTableError extends Error {
+  constructor() {
+    super('RobotNotOnTableError')
+  }
+}
 
 const getErrorMessage = (error?: Error): string | undefined => {
-  if (error instanceof NonIntegerCoordinateError) {
+  if (error instanceof InvalidInputError) {
+    return 'Unrecognised command. Please enter either PLACE, LEFT, RIGHT, MOVE, or REPORT'
+  } else if (error instanceof NonIntegerCoordinateError) {
     return 'x and y coordinates should be integers'
+  } else if (error instanceof RobotNotOnTableError) {
+    return 'PLACE the robot on the table first!'
   } else if (error instanceof OutOfBoundCoordinateError) {
     return 'That would mean the robot would fall off the table!'
   } else {
@@ -28,62 +38,51 @@ function App() {
     }
   }
 
-  class RobotNotOnTableError extends Error {
-    constructor() {
-      super('RobotNotOnTableError')
-    }
-  }
   const [config, setConfig] = useState<Config>()
   const [error, setError] = useState<Error>()
   const [userInput, setUserInput] = useState('')
-
-  const place = (config: Config) => {
-    try {
-      validateConfig(config)
-      setConfig(config)
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e)
-      } else {
-        setError(new UnknownError())
-      }
-    }
-  }
+  const [isReporting, setIsReporting] = useState(false)
 
   const processCommand = () => {
+    setError(undefined)
     try {
-      setError(undefined)
       const command = parseInput(userInput)
-      if (command === 'LEFT') {
+
+      if (command === 'LEFT' || command === 'RIGHT' || command === 'MOVE') {
         if (config === undefined) {
-          setError(new RobotNotOnTableError())
-          return
+          throw new RobotNotOnTableError()
         }
-        const newConfig = left(config)
+
+        let newConfig: Config
+        switch (command) {
+          case 'LEFT':
+            newConfig = left(config)
+            break
+          case 'RIGHT':
+            newConfig = right(config)
+            break
+          case 'MOVE':
+            newConfig = move(config)
+            break
+        }
+
         setConfig(newConfig)
-        setUserInput('')
-      } else if (
-        command === 'MOVE' ||
-        command === 'REPORT' ||
-        command === 'RIGHT'
-      ) {
-        setUserInput('')
+      } else if (command === 'REPORT') {
+        setIsReporting(true)
       } else {
         // Must be PLACE, so has been parsed into a Config object
-        try {
-          validateConfig(command)
-          setConfig(command)
-          setUserInput('')
-        } catch (e: unknown) {
-          if (e instanceof Error) {
-            setError(e)
-          } else {
-            setError(new UnknownError())
-          }
-        }
+        validateConfig(command)
+        setConfig(command)
       }
+      // Clear input only on success, to allow user to type new command
+      setUserInput('')
     } catch (e: unknown) {
-      if (e instanceof InvalidInputError) {
+      if (
+        e instanceof InvalidInputError ||
+        e instanceof OutOfBoundCoordinateError ||
+        e instanceof RobotNotOnTableError ||
+        e instanceof NonIntegerCoordinateError
+      ) {
         setError(e)
       } else {
         setError(new UnknownError())
@@ -108,30 +107,23 @@ function App() {
       </div>
       <h1>Toy Robot Simulator</h1>
       <div className="card">
-        <button
-          onClick={() => {
-            place({ x: 1, y: 2, f: 'NORTH' })
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            setIsReporting(false)
+            processCommand()
           }}
         >
-          Place 1, 2, NORTH
-        </button>
-
-        <p>{configMessage}</p>
+          <input
+            type="text"
+            onChange={(e) => setUserInput(e.currentTarget.value)}
+            value={userInput}
+          />
+          <input type="submit"></input>
+        </form>
+        <p className={isReporting ? 'highlight' : ''}>{configMessage}</p>
         {error && <p>{`Error: ${getErrorMessage(error)}`}</p>}
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          processCommand()
-        }}
-      >
-        <input
-          type="text"
-          onChange={(e) => setUserInput(e.currentTarget.value)}
-          value={userInput}
-        />
-        <input type="submit"></input>
-      </form>
     </>
   )
 }
