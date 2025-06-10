@@ -16,7 +16,7 @@ class RobotNotOnTableError extends Error {
   }
 }
 
-const getErrorMessage = (error?: Error): string | undefined => {
+const getErrorMessage = (error?: Error): string => {
   if (error instanceof InvalidInputError) {
     return 'Unrecognised command. Please enter either PLACE, LEFT, RIGHT, MOVE, or REPORT'
   } else if (error instanceof NonIntegerCoordinateError) {
@@ -91,7 +91,7 @@ function App() {
 
   const configMessage =
     config !== undefined
-      ? `Config: x=${config.x}, y=${config.y}, f=${config.f}`
+      ? `Config: x=${config.x.toString()}, y=${config.y.toString()}, f=${config.f}`
       : 'Robot not on table'
 
   return (
@@ -110,7 +110,9 @@ function App() {
         >
           <input
             type="text"
-            onChange={(e) => setUserInput(e.currentTarget.value)}
+            onChange={(e) => {
+              setUserInput(e.currentTarget.value)
+            }}
             value={userInput}
           />
           <input type="submit"></input>
