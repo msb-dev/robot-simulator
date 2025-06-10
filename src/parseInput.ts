@@ -2,7 +2,7 @@ import { orientations, type Config, type Orientation } from './config/config'
 
 type Command = 'REPORT' | 'MOVE' | 'LEFT' | 'RIGHT' | Config
 
-class InvalidInputError extends Error {
+export class InvalidInputError extends Error {
   constructor() {
     super('InvalidInputError')
   }

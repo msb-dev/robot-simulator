@@ -8,6 +8,8 @@ import {
   NonIntegerCoordinateError,
   OutOfBoundCoordinateError,
 } from './config/config'
+import { InvalidInputError, parseInput } from './parseInput'
+import { left } from './commands/commands'
 
 const getErrorMessage = (error?: Error): string | undefined => {
   if (error instanceof NonIntegerCoordinateError) {
@@ -25,8 +27,15 @@ function App() {
       super('UnknownError')
     }
   }
+
+  class RobotNotOnTableError extends Error {
+    constructor() {
+      super('RobotNotOnTableError')
+    }
+  }
   const [config, setConfig] = useState<Config>()
   const [error, setError] = useState<Error>()
+  const [userInput, setUserInput] = useState('')
 
   const place = (config: Config) => {
     try {
@@ -34,6 +43,47 @@ function App() {
       setConfig(config)
     } catch (e: unknown) {
       if (e instanceof Error) {
+        setError(e)
+      } else {
+        setError(new UnknownError())
+      }
+    }
+  }
+
+  const processCommand = () => {
+    try {
+      setError(undefined)
+      const command = parseInput(userInput)
+      if (command === 'LEFT') {
+        if (config === undefined) {
+          setError(new RobotNotOnTableError())
+          return
+        }
+        const newConfig = left(config)
+        setConfig(newConfig)
+        setUserInput('')
+      } else if (
+        command === 'MOVE' ||
+        command === 'REPORT' ||
+        command === 'RIGHT'
+      ) {
+        setUserInput('')
+      } else {
+        // Must be PLACE, so has been parsed into a Config object
+        try {
+          validateConfig(command)
+          setConfig(command)
+          setUserInput('')
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            setError(e)
+          } else {
+            setError(new UnknownError())
+          }
+        }
+      }
+    } catch (e: unknown) {
+      if (e instanceof InvalidInputError) {
         setError(e)
       } else {
         setError(new UnknownError())
@@ -69,9 +119,19 @@ function App() {
         <p>{configMessage}</p>
         {error && <p>{`Error: ${getErrorMessage(error)}`}</p>}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          processCommand()
+        }}
+      >
+        <input
+          type="text"
+          onChange={(e) => setUserInput(e.currentTarget.value)}
+          value={userInput}
+        />
+        <input type="submit"></input>
+      </form>
     </>
   )
 }
