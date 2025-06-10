@@ -22,7 +22,6 @@ const parseOrientation = (input: string): Orientation => {
 }
 
 const parsePlaceParameters = (p1: string, p2: string, p3: string): Config => {
-  console.error('FFFFFFFFOOOOOOOOO', p1, p2, p3)
   const x = Number(p1)
   const y = Number(p2)
   if (Number.isNaN(x) || Number.isNaN(y)) {
