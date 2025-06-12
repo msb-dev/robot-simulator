@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import robotLogo from '/robot.svg'
 import './App.css'
 import {
@@ -31,17 +31,17 @@ const getErrorMessage = (error?: Error): string => {
   }
 }
 
-function App() {
-  class UnknownError extends Error {
-    constructor() {
-      super('UnknownError')
-    }
+class UnknownError extends Error {
+  constructor() {
+    super('UnknownError')
   }
+}
 
+function App() {
   const [config, setConfig] = useState<Config>()
   const [error, setError] = useState<Error>()
   const [userInput, setUserInput] = useState('')
-  const [isReporting, setIsReporting] = useState(false)
+  const reportBoxRef = useRef<HTMLParagraphElement | null>(null)
 
   const processCommand = () => {
     setError(undefined)
@@ -68,7 +68,7 @@ function App() {
 
         setConfig(newConfig)
       } else if (command === 'REPORT') {
-        setIsReporting(true)
+        triggerReportHighlight()
       } else {
         // Must be PLACE, so has been parsed into a Config object
         validateConfig(command)
@@ -95,31 +95,45 @@ function App() {
       ? `Config: x=${config.x.toString()}, y=${config.y.toString()}, f=${config.f}`
       : 'Robot not on table'
 
+  const triggerReportHighlight = () => {
+    const element = reportBoxRef.current
+    if (element !== null) {
+      element.classList.remove('highlight')
+
+      // Hack to force reflow/paint
+      void element.offsetWidth
+      element.classList.add('highlight')
+    }
+  }
+
   return (
     <>
       <h1>Toy Robot Simulator</h1>
-      <Table robotConfig={config} />
       <div className="card">
+        <Table robotConfig={config} />
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            setIsReporting(false)
             processCommand()
           }}
+          className="command-form"
         >
           <input
+            className="command-box"
             type="text"
             onChange={(e) => {
               setUserInput(e.currentTarget.value)
             }}
             value={userInput}
           />
-          <input type="submit"></input>
+          <button type="submit" className="command-button">
+            ⏎
+          </button>
         </form>
-        <p className={`report-box ${isReporting ? 'highlight' : ''}`}>
+        <p ref={reportBoxRef} className="report-box">
           {configMessage}
         </p>
-        {error && <p>{`Error: ${getErrorMessage(error)}`}</p>}
+        {error && <p className="error">{`Error: ${getErrorMessage(error)}`}</p>}
       </div>
     </>
   )
