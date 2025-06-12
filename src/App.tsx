@@ -9,6 +9,7 @@ import {
 } from './config/config'
 import { InvalidInputError, parseInput } from './parseInput'
 import { left, right, move } from './commands/commands'
+import Table from './table/Table'
 
 class RobotNotOnTableError extends Error {
   constructor() {
@@ -96,10 +97,8 @@ function App() {
 
   return (
     <>
-      <div>
-        <img src={robotLogo} className="logo" alt="Robot logo" />
-      </div>
       <h1>Toy Robot Simulator</h1>
+      <Table robotConfig={config} />
       <div className="card">
         <form
           onSubmit={(e) => {
@@ -117,7 +116,9 @@ function App() {
           />
           <input type="submit"></input>
         </form>
-        <p className={isReporting ? 'highlight' : ''}>{configMessage}</p>
+        <p className={`report-box ${isReporting ? 'highlight' : ''}`}>
+          {configMessage}
+        </p>
         {error && <p>{`Error: ${getErrorMessage(error)}`}</p>}
       </div>
     </>

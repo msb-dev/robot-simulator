@@ -1,0 +1,15 @@
+.table {
+    display: grid;
+    width: 600px;
+    height: 600px;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.cell {
+    border: 1px dotted green;
+}
+
+.robot {
+    padding: 16px;
+}

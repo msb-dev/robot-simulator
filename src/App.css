@@ -41,6 +41,10 @@
   color: #888;
 }
 
+.report-box {
+  border: 4px solid transparent
+}
+
 .highlight {
   border: 4px solid transparent;
   animation: highlight 1s;
