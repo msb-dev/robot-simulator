@@ -1,6 +1,10 @@
 # Toy Robot Simulator
 
-Web page written in TypeScript and React to parse commands to control a simulated toy robot. [See below](#discussion-about-the-design) for discussion about the design of this solution. 
+Web page written in TypeScript and React to parse commands to control a simulated toy robot.
+
+Live version of the simulator here: https://msb-dev.github.io/robot-simulator/
+
+[See below](#discussion-about-the-design) for discussion about the design of this solution. 
 
 Scaffolded with `npm create vite`.
 
