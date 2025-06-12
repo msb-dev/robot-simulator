@@ -122,7 +122,7 @@ function App() {
             className="command-box"
             type="text"
             onChange={(e) => {
-              setUserInput(e.currentTarget.value)
+              setUserInput(e.currentTarget.value.toUpperCase())
             }}
             value={userInput}
           />

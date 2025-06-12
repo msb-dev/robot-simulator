@@ -38,7 +38,7 @@
 
 .command-box {
   border: 3px solid var(--green);
-  background-color: black;
+  background-color: transparent;
   padding: 16px;
   color: var(--green);
   font-size: 1rem;

@@ -4,10 +4,11 @@
     height: 600px;
     grid-template-rows: repeat(5, 1fr);
     grid-template-columns: repeat(5, 1fr);
+    border: 2px solid var(--green);
 }
 
 .cell {
-    border: 1px dotted green;
+    border: 2px solid var(--green);
 }
 
 .robot {
