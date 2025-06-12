@@ -9,7 +9,9 @@ const Table = ({ robotConfig }: { robotConfig: Config | undefined }) => {
     <div className="table">
       {[...Array(5).keys()].map((y: number) =>
         [...Array(5).keys()].map((x: number) => {
-          return <Cell x={x} y={y} />
+          return (
+            <Cell key={`x-${x.toString()}-y-${y.toString()}`} x={x} y={y} />
+          )
         })
       )}
       {robotConfig !== undefined && <Robot config={robotConfig} />}

@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import robotLogo from '/robot.svg'
 import './App.css'
 import {
   validateConfig,
